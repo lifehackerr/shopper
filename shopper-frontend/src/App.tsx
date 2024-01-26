@@ -2,10 +2,15 @@ import { BrowserRouter as Router, Routes,Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Loader from "./Components/Loader.tsx"
 import Header from './Components/header.tsx'
+
+//lazy loading of routes
 const Shipping = lazy(() => import("./pages/shipping"))
 const Home = lazy(()=> import("./pages/home"))
 const Search = lazy(()=> import("./pages/search"))
 const Cart = lazy(()=> import("./pages/cart"))
+const Login = lazy(()=> import("./pages/login"))
+const Orders = lazy(()=> import("./pages/orders"))
+const OrderDetails = lazy(()=> import("./pages/order-details"))
 
 //Admin
 const Dashboard = lazy(() => import("./pages/admin/dashboard"));
@@ -42,9 +47,14 @@ const App = () => {
         <Route path = "/search" element = {<Search/>} />
         <Route path = "/cart" element = {<Cart/>} />
 
+        {/* not logged in user route */}
+        <Route path = "/login" element = {<Login/>} />
+
         {/* Authentication required-- protected route Logged in routes*/}
         <Route>
         <Route path = "/shipping" element = {<Shipping/>} />
+        <Route path = "/orders" element = {<Orders/>} />
+        <Route path = "/orders/:id" element = {<OrderDetails/>} />
         </Route>
         
 
