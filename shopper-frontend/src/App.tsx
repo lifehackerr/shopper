@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes,Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Loader from "./Components/Loader.tsx"
 import Header from './Components/header.tsx'
-
+const Shipping = lazy(() => import("./pages/shipping"))
 const Home = lazy(()=> import("./pages/home"))
 const Search = lazy(()=> import("./pages/search"))
 const Cart = lazy(()=> import("./pages/cart"))
@@ -36,9 +36,18 @@ const App = () => {
       <Header/>
       <Suspense fallback = {<Loader/>}>
       <Routes>
+
+        {/* Normal Routes, Login not required */}
         <Route path = "/" element = {<Home/>} />
         <Route path = "/search" element = {<Search/>} />
         <Route path = "/cart" element = {<Cart/>} />
+
+        {/* Authentication required-- protected route Logged in routes*/}
+        <Route>
+        <Route path = "/shipping" element = {<Shipping/>} />
+        </Route>
+        
+
 
         {/* Admin routes */}
         {/* <Route
