@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import userRoutes from "./routes/user.js"
+import productRoutes from "./routes/products.js"
 import { errorMiddleware } from './middlewares/error.js';
 const port = 4000;
 const app =  express();
@@ -14,6 +15,9 @@ app.get("/", (req, res) => {
     res.send(`API working fine with /api/v1`)
 })
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/product", productRoutes);
+
+app.use("/uploads",express.static("uploads"));
 app.use(errorMiddleware);
 
 app.listen(port,()=>{
