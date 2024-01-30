@@ -10,12 +10,12 @@ import { Product } from "../models/products.js";
 export const newOrder = TryCatch(async (req: Request<{}, {}, NewOrderRequestBody>, res, next) =>{
     const {shippingInfo,orderItems,user,subtotal,tax,shippingCharges,discount,total,} = req.body;
     if(!shippingInfo || !orderItems || !user || !subtotal || !tax || !total) return next(new ErrorHandler("please enter all fields",400));
-    await Order.create({shippingInfo,orderItems,user,subtotal,tax,shippingCharges,discount,total,});
+    const order = await Order.create({shippingInfo,orderItems,user,subtotal,tax,shippingCharges,discount,total,});
     await reductStock(orderItems);
-    await invalidateCache({product:true,order:true,admin:true,userId:user,})
+    await invalidateCache({product:true,order:true,admin:true,userId:user,productId:order.orderItems.map(i=> String(i.productId))})
     return res.status(201).json({
         success: true,
-        message: "Order created successfully",
+        message: "Order created successfully",order
     })
 });
 
