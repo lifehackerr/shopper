@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import NodeCache from 'node-cache';
 import morgan from 'morgan';
+import Stripe from 'stripe';
+
 import userRoutes from "./routes/user.js"
 import productRoutes from "./routes/products.js"
 import orderRoutes from "./routes/orders.js"
@@ -15,7 +17,9 @@ config({
     path:"./.env",
 });
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT|| 4000;
+const stripeKey = process.env.STRIPE_KEY || "";
+export const stripe = new Stripe(stripeKey)
 export const myCache = new NodeCache();
 const app =  express();
 app.use(express.json());
