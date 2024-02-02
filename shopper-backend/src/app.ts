@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import NodeCache from 'node-cache';
 import morgan from 'morgan';
 import Stripe from 'stripe';
+import cors from 'cors';
 
 import userRoutes from "./routes/user.js"
 import productRoutes from "./routes/products.js"
@@ -24,6 +25,7 @@ export const myCache = new NodeCache();
 const app =  express();
 app.use(express.json());
 app.use(morgan("dev"))
+app.use(cors());
 mongoose.connect("mongodb://localhost:27017",{dbName: "ShopperDB"})
     .then((c) => {console.log(`MongoDB connected to ${c.connection.host}`);})
     .catch((error) => console.log(error));
