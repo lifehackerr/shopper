@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes,Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Loader from "./Components/Loader.tsx"
 import Header from './Components/header.tsx'
+import { Toaster } from 'react-hot-toast'
 
 //lazy loading of routes
 const Shipping = lazy(() => import("./pages/shipping"))
@@ -86,6 +87,7 @@ const App = () => {
   <Route path="/admin/transaction/:id" element={<TransactionManagement />} />
       </Routes>
       </Suspense>
+      <Toaster position='bottom-center'/>
     </Router>
   )
 }
