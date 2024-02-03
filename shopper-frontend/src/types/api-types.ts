@@ -1,4 +1,10 @@
+import { User } from "./types";
+
 export type MessageResponse = {
     success: boolean;
-    messaage: string;
+    message: string;
+}
+export type UserResponse = {
+    success: boolean;
+    user: User;
 }

@@ -1,8 +1,15 @@
 import { BrowserRouter as Router, Routes,Route } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import Loader from "./Components/Loader.tsx"
 import Header from './Components/header.tsx'
 import { Toaster } from 'react-hot-toast'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from './firebase.ts'
+import { userExist, userNotExist } from './redux/reducer/userReducer.ts'
+import { useDispatch, useSelector } from 'react-redux'
+import { getUser } from './redux/api/userAPI.ts'
+import { UserReducerInitialState } from './types/reducer-types.ts'
+import ProtectedRoutes from './Components/protected-routes.tsx'
 
 //lazy loading of routes
 const Shipping = lazy(() => import("./pages/shipping"))
@@ -37,9 +44,23 @@ const TransactionManagement = lazy(
 // we use suspense and provide a fallback function so that it can load the screen till the component lazy loades
 
 const App = () => {
-  return (
+  const{user,loading} = useSelector((state:{userReducer: UserReducerInitialState}) => state.userReducer )
+  const dispatch = useDispatch();
+  useEffect(() =>{
+    onAuthStateChanged(auth,async(user) =>{
+      if(user){
+        const data = await getUser(user.uid);
+        dispatch(userExist(data!.user));
+      }
+      else{
+        dispatch(userNotExist());
+      }
+    })
+
+  },[]);
+  return loading ? <Loader/> :  (
     <Router>
-      <Header/>
+      <Header user= {user}/>
       <Suspense fallback = {<Loader/>}>
       <Routes>
 
@@ -49,10 +70,10 @@ const App = () => {
         <Route path = "/cart" element = {<Cart/>} />
 
         {/* not logged in user route */}
-        <Route path = "/login" element = {<Login/>} />
+        <Route path = "/login" element = {<ProtectedRoutes isAuthenticated = {user?false:true}><Login/></ProtectedRoutes>} />
 
         {/* Authentication required-- protected route Logged in routes*/}
-        <Route>
+        <Route element ={<ProtectedRoutes isAuthenticated = {user? true:false}/>}>
         <Route path = "/shipping" element = {<Shipping/>} />
         <Route path = "/orders" element = {<Orders/>} />
         <Route path = "/orders/:id" element = {<OrderDetails/>} />
@@ -61,11 +82,7 @@ const App = () => {
 
 
         {/* Admin routes */}
-        {/* <Route
-  element={
-    <ProtectedRoute isAuthenticated={true} adminRoute={true} isAdmin={true} />
-  }
-> */}
+        <Route element={<ProtectedRoutes isAuthenticated={true} adminOnly={true} admin={user?.role==="admin"?true:false} />}>
   <Route path="/admin/dashboard" element={<Dashboard />} />
   <Route path="/admin/product" element={<Products />} />
   <Route path="/admin/customer" element={<Customers />} />
@@ -85,6 +102,7 @@ const App = () => {
   <Route path="/admin/product/:id" element={<ProductManagement />} />
 
   <Route path="/admin/transaction/:id" element={<TransactionManagement />} />
+  </Route>
       </Routes>
       </Suspense>
       <Toaster position='bottom-center'/>
